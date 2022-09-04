@@ -1,19 +1,13 @@
 import * as dotenv from 'dotenv'
 dotenv.config()
-import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
-const app = express()
+import { ServerRest } from './models/server.js'
 
-const port = process.env.PORT
 // Dirname
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-app.get('/', (req, res) => {
-    res.send()
-})
+const server = new ServerRest()
 
-app.listen(port, () => {
-    console.log('Servidor corriendo en puerto', port)
-})
+server.startListen()
