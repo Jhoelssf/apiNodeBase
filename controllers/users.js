@@ -1,3 +1,7 @@
+import { User } from '../models/user.js'
+import bcryptjs from 'bcryptjs'
+const { genSaltSync, hashSync } = bcryptjs
+
 export const getUsers = (req = request, res = response) => {
     const { q, name = 'No name', apiKey } = req.query
 
@@ -14,12 +18,26 @@ export const updateUsers = (req, res) => {
         msg: `The user with user ID ${id}`
     })
 }
-export const addUser = (req, res) => {
-    const { name, age } = req.body
+export const addUser = async (req, res) => {
+    const { name, email, password, role } = req.body
+    const user = new User({ name, email, password, role })
+    // Verify email exists
+    const existsEmail = await User.findOne({ email })
+    if (existsEmail) {
+        return res.status(400).json({
+            msg: 'This email is already registered'
+        })
+    }
+
+    // encrypt password
+    // const salt = bcryptjs.genSaltSync()
+    const salt = genSaltSync()
+    user.password = hashSync(password, salt)
+
+    // save in bd
+    await user.save()
     res.json({
-        msg: 'Post Hello from controller',
-        name,
-        age
+        user
     })
 }
 export const deleteUser = (req, res) => {
