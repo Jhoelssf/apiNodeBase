@@ -1,0 +1,3 @@
+use('mongodbnodefh')
+
+db.users.deleteOne({email: "test1@test.com"})

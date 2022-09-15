@@ -1,17 +1,26 @@
 import express from 'express'
 import cors from 'cors'
 import { router } from '../routes/users.js'
+import { dbConnection } from '../database/config.js'
 export class ServerRest {
     constructor() {
         this.app = express()
         this.port = process.env.PORT
         this.usersRoutesPath = '/api/users'
+
+        //connect to db
+        this.connectDB()
+
         // Middlewares
         this.middlewares()
 
         // app Routes
 
         this.routes()
+    }
+
+    async connectDB() {
+        await dbConnection()
     }
 
     middlewares() {
