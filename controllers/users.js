@@ -1,33 +1,37 @@
-import { User } from '../models/user.js'
 import bcryptjs from 'bcryptjs'
+import { UserModel } from '../models/user.js'
 const { genSaltSync, hashSync } = bcryptjs
 
-export const getUsers = (req = request, res = response) => {
-    const { q, name = 'No name', apiKey } = req.query
+export const getUsers = async (req = request, res = response) => {
+    // const { q, name = 'No name', apiKey } = req.query
+    const { limit = 5, offset = 0 } = req.query
+    const query = { state: true }
+    const users = await UserModel.find(query).skip(Number(offset)).limit(Number(limit))
 
+    const total = await UserModel.countDocuments(query)
     res.json({
-        msg: 'Get Hello from controller',
-        q,
-        name,
-        apiKey
+        total,
+        users
     })
 }
-export const updateUsers = (req, res) => {
-    const id = req.params.idUser
+export const updateUsers = async (req, res) => {
+    const id = req.params.id
+    const { _id, password, google, email, ...other } = req.body
+    // TODO: validate with database
+    if (password) {
+        const salt = genSaltSync()
+        other.password = hashSync(password, salt)
+    }
+
+    const user = await UserModel.findByIdAndUpdate(id, other)
+
     res.json({
-        msg: `The user with user ID ${id}`
+        user
     })
 }
 export const addUser = async (req, res) => {
     const { name, email, password, role } = req.body
-    const user = new User({ name, email, password, role })
-    // Verify email exists
-    const existsEmail = await User.findOne({ email })
-    if (existsEmail) {
-        return res.status(400).json({
-            msg: 'This email is already registered'
-        })
-    }
+    const user = new UserModel({ name, email, password, role })
 
     // encrypt password
     // const salt = bcryptjs.genSaltSync()
@@ -40,10 +44,10 @@ export const addUser = async (req, res) => {
         user
     })
 }
-export const deleteUser = (req, res) => {
-    res.json({
-        msg: 'Delete Hello from controller'
-    })
+export const deleteUser = async (req, res) => {
+    const { id } = req.params
+    const user = await UserModel.findByIdAndUpdate(id, { state: false })
+    res.json(user)
 }
 export const patchUser = (req, res) => {
     res.json({

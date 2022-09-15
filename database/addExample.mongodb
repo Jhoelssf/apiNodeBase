@@ -1,6 +1,7 @@
 
 use('mongodbnodefh');
 
-db.mongodbnodefh.insertOne({ '_id': 1, 'item': 'abc', 'price': 10, 'quantity': 2, 'date': new Date('2014-03-01T08:00:00Z')});
+// db.mongodbnodefh.insertOne({ '_id': 1, 'item': 'abc', 'price': 10, 'quantity': 2, 'date': new Date('2014-03-01T08:00:00Z')});
+db.users.updateOne({_id: "6320118b4c0cabd0cf8b8673"}, {$set: {state: false}})
 
-db.mongodbnodefh.find({});
+db.users.find({});
