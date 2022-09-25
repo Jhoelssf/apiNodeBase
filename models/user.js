@@ -4,16 +4,16 @@ const { Schema, model } = mongoose
 const UserSchema = Schema({
     name: {
         type: String,
-        required: [true, 'El nombre es obligatorio']
+        required: [true, 'Name is required']
     },
     email: {
         type: String,
-        required: [true, 'El email es obligatorio'],
+        required: [true, 'Email is required'],
         unique: true
     },
     password: {
         type: String,
-        required: [true, 'La contraseña es obligatoria']
+        required: [true, 'Password is required']
     },
     img: {
         type: String
@@ -34,8 +34,11 @@ const UserSchema = Schema({
 })
 
 UserSchema.methods.toJSON = function () {
-    const { __v, password, ...user } = this.toObject()
-    return user
+    const { __v, password, _id: uid, ...user } = this.toObject()
+    return {
+        ...user,
+        uid
+    }
 }
 
 export const UserModel = model('User', UserSchema)

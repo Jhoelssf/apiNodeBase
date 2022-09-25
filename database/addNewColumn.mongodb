@@ -1,0 +1,8 @@
+// Select the database to use.
+use('mongodbnodefh');
+db.your_collection.update(
+  {},
+  { $set: {"new_field": 1} },
+  false,
+  true
+)

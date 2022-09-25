@@ -17,7 +17,6 @@ export const getUsers = async (req = request, res = response) => {
 export const updateUsers = async (req, res) => {
     const id = req.params.id
     const { _id, password, google, email, ...other } = req.body
-    // TODO: validate with database
     if (password) {
         const salt = genSaltSync()
         other.password = hashSync(password, salt)
@@ -44,7 +43,7 @@ export const addUser = async (req, res) => {
         user
     })
 }
-export const deleteUser = async (req, res) => {
+export const deleteUser = async (req, res = response) => {
     const { id } = req.params
     const user = await UserModel.findByIdAndUpdate(id, { state: false })
     res.json(user)
@@ -53,4 +52,9 @@ export const patchUser = (req, res) => {
     res.json({
         msg: 'Patch Hello from controller'
     })
+}
+export const activateUser = async (req, res) => {
+    const { uid } = req.body
+    const user = await UserModel.findByIdAndUpdate(uid, { state: true })
+    res.status(200).json(user)
 }

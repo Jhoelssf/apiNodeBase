@@ -1,8 +1,10 @@
 import { Router } from 'express'
 import { check } from 'express-validator'
-import { getUsers, updateUsers, addUser, deleteUser, patchUser } from '../controllers/users.js'
+import { getUsers, updateUsers, addUser, deleteUser, patchUser, activateUser } from '../controllers/users.js'
 import { existsUserByID, isAValidEmail, isAValidRole } from '../helpers/db-validators.js'
 import { validateFields } from '../middlewares/validate-fields.js'
+import { validateJWT } from '../middlewares/validate-jwt.js'
+import { hasRole, validateIsAdmin } from '../middlewares/validate-roles.js'
 
 export const router = Router()
 
@@ -21,5 +23,10 @@ router.post(
     ],
     addUser
 )
-router.delete('/:id', [check('id').custom(existsUserByID), validateFields], deleteUser)
+router.delete(
+    '/:id',
+    [validateJWT, hasRole('ADMIN_ROLE', 'SALES_ROLE'), check('id').custom(existsUserByID), validateFields],
+    deleteUser
+)
+router.post('/activate', [validateJWT, check('uid').custom(existsUserByID), validateFields], activateUser)
 router.patch('/', patchUser)
